@@ -1,0 +1,768 @@
+/* الحاجات الأساسية (الألوان والخطوط) */
+:root {
+    --brand: #a45a23;
+    --brand-light: #b66b34;
+    --brand-dark: #8b4a1b;
+    --surface: #fdfbf8;
+    --card-bg: #ffffff; /* لون جديد لخلفية الكروت */
+    --text-main: #1f2937; /* رمادي غامق للكلام الأساسي */
+    --text-muted: #6b7280; /* رمادي فاتح للبرجرافات */
+    --text-light: #9ca3af; /* رمادي باهت للكلام الفرعي */
+    --border-color: #f3f4f6;
+    --shadow-sm: 0 4px 20px rgba(0,0,0,0.03);
+    --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+}
+
+/* ألوان الدارك مود (عشان نعكس الألوان) */
+.dark-theme {
+    --surface: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #f9fafb;
+    --text-muted: #9ca3af;
+    --text-light: #6b7280;
+    --border-color: #374151;
+}
+
+/* تصفير الإعدادات بتاعة المتصفح (Reset) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--surface);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+    transition: background-color 0.4s ease, color 0.4s ease; /* عشان الألوان تتغير بنعومة */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font-family: inherit;
+}
+
+input {
+    font-family: inherit;
+}
+
+/* الكونتينر الأساسي اللي لامم الليلة */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* حركات الديكور (النقط البرتقالي اللي في الخلفية) */
+.bg-dot {
+    position: absolute;
+    border-radius: 50%;
+    background-color: var(--brand);
+    opacity: 0.3;
+    z-index: -1;
+}
+.dot-1 { width: 16px; height: 16px; top: 40px; right: 80px; }
+.dot-2 { width: 24px; height: 24px; top: 160px; left: 80px; }
+.dot-3 { width: 12px; height: 12px; bottom: 33%; right: 40px; }
+.dot-4 { width: 20px; height: 20px; top: 66%; left: 40px; }
+
+/* --- الهيدر والناف بار (شريط القوائم) --- */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.nav-links {
+    display: none; /* مخفي على الموبايل */
+    gap: 40px;
+}
+
+.nav-links a {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+    color: var(--brand);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.theme-toggle-btn {
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+    color: var(--brand);
+    border-color: var(--brand);
+}
+
+.menu-btn {
+    display: block;
+    color: var(--text-muted);
+}
+
+/* --- السكشن الرئيسي في أول الصفحة (الـ Hero) --- */
+.hero {
+    padding: 48px 0 80px;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.hero-title {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.hero-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    max-width: 400px;
+}
+
+/* شريط السيرش */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg);
+    border-radius: 50px;
+    padding: 8px;
+    box-shadow: var(--shadow-sm);
+    max-width: 450px;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.search-icon {
+    color: var(--text-light);
+    padding: 0 16px 0 8px;
+}
+
+.search-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.search-btn {
+    background-color: var(--brand);
+    color: #fff;
+    padding: 12px 32px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.search-btn:hover {
+    background-color: var(--brand-light);
+}
+
+/* الأرقام والإحصائيات */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 64px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+/* الصورة الكبيرة في أول الصفحة */
+.hero-img-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-top-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    box-shadow: var(--shadow-lg);
+}
+
+/* --- سكشن الخدمات بتاعتنا --- */
+.services {
+    padding: 80px 0;
+}
+
+.section-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.service-card {
+    background-color: var(--card-bg);
+    padding: 32px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.service-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.service-card-hover-line {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 0;
+    background-color: var(--brand);
+    transition: height 0.3s ease;
+}
+
+.service-card:hover .service-card-hover-line {
+    height: 100%;
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.service-title-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.service-dot {
+    width: 4px;
+    height: 16px;
+    background-color: var(--brand);
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.service-title {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.service-number {
+    color: var(--brand);
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0.5;
+}
+
+.service-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 2;
+    margin-bottom: 32px;
+}
+
+.read-more {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.service-card:hover .read-more {
+    color: var(--brand);
+}
+
+.read-more-highlight {
+    background-color: var(--brand);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-left: 4px;
+}
+
+.read-more svg {
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    transform: rotate(180deg); /* عشان نقلب السهم ناحية الشمال */
+}
+
+/* --- سكشن السكن المفضل --- */
+.favorite {
+    padding: 80px 0;
+}
+
+.favorite-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 64px;
+    align-items: center;
+}
+
+.fav-images {
+    position: relative;
+    height: 450px;
+    max-width: 450px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.fav-bg-shape {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 66%;
+    height: 66%;
+    background-color: #94a3b8;
+    opacity: 0.2;
+    border-top-right-radius: 24px;
+}
+
+.fav-img-back {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 70%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+}
+
+.fav-img-front {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 65%;
+    height: 75%;
+    object-fit: cover;
+    z-index: 20;
+    border: 8px solid var(--surface);
+    box-shadow: var(--shadow-lg);
+    transition: border-color 0.4s ease;
+}
+
+.fav-content-title {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 24px;
+}
+
+.fav-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 2;
+    margin-bottom: 32px;
+}
+
+.fav-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-outline {
+    display: flex;
+    align-items: center;
+    padding: 10px 24px;
+    border: 2px solid var(--brand);
+    color: var(--brand);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.btn-outline:hover {
+    background-color: var(--brand);
+    color: #fff;
+}
+
+.btn-outline svg {
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+}
+
+.btn-solid {
+    padding: 12px 24px;
+    background-color: var(--brand);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    transition: background-color 0.3s;
+}
+
+.btn-solid:hover {
+    background-color: var(--brand-dark);
+}
+
+/* --- سكشن ليه تختارنا (السكشن الجديد) --- */
+.features {
+    padding: 80px 0;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 48px;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 32px 24px;
+}
+
+.feature-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 24px;
+    background-color: rgba(164, 90, 35, 0.1);
+    color: var(--brand);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+}
+
+.feature-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.feature-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+/* --- سكشن بيوت في مدن مختلفة --- */
+.cities {
+    padding: 80px 0;
+}
+
+.cities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+}
+
+.slider-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    padding: 6px;
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.control-btn.active, .control-btn:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+}
+
+.control-btn.active:hover {
+    background-color: var(--brand);
+    color: #fff;
+}
+
+.control-btn svg { width: 20px; height: 20px; }
+
+.cities-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.city-card {
+    cursor: pointer;
+}
+
+.city-img-wrapper {
+    overflow: hidden;
+    border-top-right-radius: 12px;
+    border-top-left-radius: 12px;
+    margin-bottom: 16px;
+    height: 224px;
+}
+
+.city-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.city-card:hover .city-img {
+    transform: scale(1.05);
+}
+
+.city-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.city-location {
+    font-size: 11px;
+    color: var(--text-light);
+}
+
+/* --- سكشن النشرة الإخبارية (النيوزليتر) --- */
+.newsletter {
+    padding: 96px 0;
+    position: relative;
+    z-index: 10;
+}
+
+.newsletter-card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    padding: 48px 24px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    max-width: 896px;
+    margin: 0 auto;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+/* الدواير اللي مزينة الخلفية ورا النشرة */
+.nl-blob {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    background-color: var(--brand);
+    border-radius: 50%;
+    opacity: 0.1;
+    filter: blur(40px);
+    z-index: -1;
+}
+.nl-blob-1 { top: -40px; right: -40px; }
+.nl-blob-2 { bottom: -40px; left: -40px; }
+
+.nl-title {
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.nl-desc {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-bottom: 40px;
+}
+
+.nl-form {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    padding: 6px;
+    max-width: 450px;
+    margin: 0 auto;
+    transition: box-shadow 0.3s, background-color 0.4s ease;
+}
+
+.nl-form:focus-within {
+    box-shadow: 0 0 0 2px rgba(164, 90, 35, 0.2); /* تأثير الجلو أو النور بلون الموقع الأساسي */
+}
+
+.nl-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0 24px;
+    font-size: 14px;
+    color: var(--text-main);
+}
+
+.nl-btn {
+    background-color: var(--brand);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 12px 32px;
+    border-radius: 50px;
+    white-space: nowrap;
+    transition: background-color 0.3s;
+}
+
+.nl-btn:hover {
+    background-color: var(--brand-dark);
+}
+
+/* --- الفوتر (آخر حتة في الصفحة تحت) --- */
+footer {
+    padding: 40px 0 32px;
+    border-top: 1px solid var(--border-color);
+}
+
+.logo-size{
+    height: 30px;
+    background-color: var(--brand);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.footer-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px 32px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+.footer-links a:hover {
+    color: var(--brand);
+}
+
+.footer-bottom {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* --- تظبيط الريسبونسيف عشان الشاشات المختلفة --- */
+
+/* شاشات التابلت وأكبر */
+@media (min-width: 768px) {
+    .nav-links { display: flex; }
+    .menu-btn { display: none; }
+    
+    .hero-title { font-size: 48px; }
+    .stats { text-align: right; }
+    .hero-img-container { height: 500px; }
+
+    .services-grid { grid-template-columns: repeat(2, 1fr); }
+    .features-grid { grid-template-columns: repeat(3, 1fr); }
+    .cities-grid { grid-template-columns: repeat(3, 1fr); }
+
+    .newsletter-card { padding: 64px; }
+    
+    .footer-top {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+/* شاشات الكمبيوتر (الديسكتوب) وأكبر */
+@media (min-width: 1024px) {
+    .hero-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-title { font-size: 60px; }
+    
+    .services-grid { grid-template-columns: repeat(4, 1fr); }
+    
+    .favorite-grid { grid-template-columns: repeat(2, 1fr); }
+    .fav-images { margin: 0; }
+}
+
