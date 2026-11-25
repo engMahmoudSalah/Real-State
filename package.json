@@ -1,0 +1,1 @@
+{ "name": "real-state", "private": true, "version": "2.0.0", "scripts": { "build": "echo 'no build step: static assets + Worker'", "deploy": "wrangler deploy" }, "devDependencies": { "wrangler": "^4" } }
