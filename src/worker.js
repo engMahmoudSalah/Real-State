@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS favs(uid TEXT NOT NULL, listing TEXT NOT NULL, ts INT
 CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner TEXT NOT NULL, from_uid TEXT, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', msg TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', reply TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL, replied INTEGER)`;
   }
   seed() {
+    if (this._sd) return; this._sd = true;
     if (this.one("SELECT COUNT(*) n FROM listings").n) return;
     SEED.forEach((s, i) => this.run("INSERT INTO listings(id,owner,title,city,type,beds,baths,area,price,purpose,status,sample,created,updated,descr,features) VALUES(?,?,?,?,?,?,?,?,?,?,'approved',1,?,?,?,?)", "S" + (i + 1), "system", s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], now() - i * 3600e3, now(), "عقار نموذجي لعرض شكل المنصة. الأسعار والتفاصيل غير حقيقية.", "أمن,مواقف,مصعد"));
   }
