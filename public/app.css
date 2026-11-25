@@ -15,3 +15,15 @@ body{font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif}
 .two{display:grid;gap:18px;grid-template-columns:1fr 340px}@media(max-width:860px){.two{grid-template-columns:1fr}}
 .hp{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}
 .hero2{padding-bottom:120px}.sky{position:absolute!important;inset:auto 0 0 0;pointer-events:none;z-index:0!important}@keyframes win{0%,100%{opacity:.9}50%{opacity:.25}}.win{animation:win 4s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.win{animation:none}}
+.hero2{background-image:linear-gradient(color-mix(in srgb,var(--accent) 14%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--accent) 14%,transparent) 1px,transparent 1px),linear-gradient(135deg,var(--accent-soft),var(--surface2));background-size:28px 28px,28px 28px,auto}
+.bp{max-width:460px;margin:0 auto 8px;direction:ltr}.hline{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 6s ease-in-out infinite}
+@keyframes draw{0%{stroke-dashoffset:1}55%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
+.dim{fill:none;stroke:var(--muted);stroke-width:1.2}.dt{fill:var(--muted);font:600 11px ui-monospace,monospace;text-anchor:middle}.bp .dt:last-of-type{text-anchor:start}
+.sun{fill:var(--accent);opacity:.85;animation:sunr 12s ease-in-out infinite}@keyframes sunr{0%,100%{transform:translate(0,0)}50%{transform:translate(300px,-14px)}}
+.cloud ellipse{fill:var(--surface);opacity:.8}.c1{transform:translate(120px,40px);animation:cl1 24s linear infinite}.c2{transform:translate(300px,26px);animation:cl2 32s linear infinite}
+@keyframes cl1{to{transform:translate(440px,40px)}}@keyframes cl2{from{transform:translate(-40px,26px)}to{transform:translate(300px,26px)}}
+.app{fill:var(--accent);stroke:var(--accent);stroke-width:1.5;stroke-linejoin:round}.api{fill:none;stroke:var(--accent-t,#fff);stroke-width:2.2;stroke-linejoin:round}.ap{display:inline-block;animation:pinb 3s ease-in-out infinite;transform-origin:50% 100%}.ap svg{width:100%;height:100%}
+@keyframes pinb{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.ae .ap1,.ae .ap2{fill:none;stroke:var(--muted);stroke-width:3;stroke-linecap:round}.ae .ap3{stroke:var(--muted);stroke-width:2.5;fill:none}.ae .ap4{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2}.ae .atx{fill:var(--accent);font:800 17px system-ui,"Noto Sans Arabic",sans-serif}.ae .ap5{fill:var(--surface);stroke:var(--accent);stroke-width:2.2;stroke-linejoin:round}.ae .ap6{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
+.ae .asign{transform-origin:72px 12px;animation:sway 3.5s ease-in-out infinite}@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.hline,.sun,.c1,.c2,.ap,.ae .asign{animation:none}.hline{stroke-dashoffset:0}}
