@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
     o.phone = b.phone !== undefined ? clean(b.phone, 20).replace(/[^0-9+ ]/g, "") : old.phone || "";
     return o;
   }
+  purgeUsers(ids) { const n = ids.map(() => "?").join(","); this.run(`DELETE FROM favs WHERE uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids); this.run(`DELETE FROM inq WHERE owner IN (${n}) OR from_uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids, ...ids); this.run(`DELETE FROM listings WHERE owner IN (${n})`, ...ids); }
   async app(c) {
     this.seed();
     const { path, method, body, url } = c; let m;
