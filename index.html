@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real State Landing Page</title>
+    <title>العقارات | ابحث عن منزل أحلامك</title>
+    <meta name="description" content="ابحث عن شقق وفيلات ومكاتب وشاليهات، فلتر بالسعر والمدينة، واحسب القسط، وابعت استفسارك.">
 
     <!-- خطوط جوجل (عشان الفونت كيرو) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +13,7 @@
     <link rel="stylesheet" href="style.css">
   
 </head>
-<body>
+<body id="top">
 
     <!-- النقط الديكور اللي في الخلفية -->
     <div class="bg-dot dot-1"></div>
@@ -24,11 +25,11 @@
         
         <!-- الهيدر -->
         <header>
-            <a href="#" class="logo">العقارات</a>
+            <a href="#top" class="logo">العقارات</a>
             <nav class="nav-links">
-                <a href="#">الرئيسية</a>
-                <a href="#">المدونة</a>
-                <a href="#">اتصل بنا</a>
+                <a href="#top">الرئيسية</a>
+                <a href="#listings">العقارات</a>
+                <a href="#calculator">حاسبة القسط</a>
             </nav>
             <div class="header-actions">
                 <button id="theme-toggle" class="theme-toggle-btn" aria-label="تبديل المظهر">
@@ -82,8 +83,56 @@
             </div>
         </section>
 
+        <!-- العقارات: بحث وفلاتر ومفضلة -->
+        <section class="listings" id="listings">
+            <h2 class="section-title">ابحث عن عقارك</h2>
+            <p class="ls-note">العقارات المعروضة حاليًا أمثلة توضيحية للتجربة، وهتتبدل بعقاراتنا الفعلية.</p>
+            <div class="ls-filters" role="search">
+                <input id="f-q" type="search" placeholder="ابحث بالاسم أو المنطقة" aria-label="بحث">
+                <select id="f-city" aria-label="المدينة"><option value="">كل المدن</option></select>
+                <select id="f-type" aria-label="النوع"><option value="">كل الأنواع</option></select>
+                <select id="f-beds" aria-label="عدد الغرف"><option value="0">أي عدد غرف</option><option value="1">غرفة+</option><option value="2">2 غرف+</option><option value="3">3 غرف+</option><option value="4">4 غرف+</option></select>
+                <select id="f-max" aria-label="السعر الأقصى"><option value="0">أي سعر</option><option value="2000000">لحد 2 مليون</option><option value="4000000">لحد 4 مليون</option><option value="7000000">لحد 7 مليون</option><option value="10000000">لحد 10 مليون</option></select>
+                <select id="f-sort" aria-label="الترتيب"><option value="new">الترتيب الافتراضي</option><option value="low">الأرخص أولًا</option><option value="high">الأغلى أولًا</option><option value="area">الأكبر مساحة</option></select>
+                <label class="ls-checkbox"><input id="f-fav" type="checkbox"> المفضلة بس</label>
+                <button id="f-reset" class="ls-btn ghost" type="button">مسح الفلاتر</button>
+            </div>
+            <p id="ls-count" class="ls-count" aria-live="polite"></p>
+            <div id="ls-grid" class="ls-grid"></div>
+            <p id="ls-empty" class="ls-empty" hidden>مفيش عقارات بالمواصفات دي. جرّب تغيّر الفلاتر.</p>
+        </section>
+
+        <section class="calculator" id="calculator">
+            <h2 class="section-title">حاسبة القسط</h2>
+            <div class="mc-card">
+                <div class="mc-grid">
+                    <label>سعر العقار (ج.م)<input id="mc-price" type="number" min="0" step="10000" value="4200000" inputmode="numeric"></label>
+                    <label>المقدم (ج.م)<input id="mc-down" type="number" min="0" step="10000" value="840000" inputmode="numeric"></label>
+                    <label>مدة التقسيط (سنين)<input id="mc-years" type="number" min="1" max="30" value="10" inputmode="numeric"></label>
+                    <label>الفائدة السنوية (%)<input id="mc-rate" type="number" min="0" max="50" step="0.1" value="0" inputmode="decimal"></label>
+                </div>
+                <p class="mc-result" id="mc-out" aria-live="polite"></p>
+                <p class="mc-total" id="mc-total"></p>
+                <p class="ls-note">تقدير تقريبي بالقسط الثابت، ومش عرض تمويل رسمي.</p>
+                <button id="contact-open" class="ls-btn" type="button">عايز أتواصل معاكم</button>
+            </div>
+        </section>
+
+        <div id="iq-dialog" class="iq-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="iq-title">
+            <form id="iq-form" class="iq-box">
+                <button id="iq-close" class="iq-x" type="button" aria-label="إغلاق">×</button>
+                <h3 id="iq-title">أرسل استفسارك</h3>
+                <p class="ls-note" id="iq-ref"></p>
+                <label>الاسم<input id="iq-name" required maxlength="80" autocomplete="name"></label>
+                <label>رقم التليفون<input id="iq-phone" required inputmode="tel" dir="ltr" maxlength="30" autocomplete="tel" placeholder="+20 100 000 0000"></label>
+                <label>رسالتك<textarea id="iq-message" required maxlength="1000" rows="4"></textarea></label>
+                <button id="iq-send" class="ls-btn" type="submit">إرسال</button>
+                <p id="iq-msg-s" class="ls-note" role="status" hidden></p>
+            </form>
+        </div>
+
         <!-- سكشن الخدمات -->
-        <section class="services">
+        <section class="services" id="services">
             <h2 class="section-title">خدماتنا</h2>
             <div class="services-grid">
                 
@@ -97,7 +146,7 @@
                         <span class="service-number">01</span>
                     </div>
                     <p class="service-desc">لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان لوريم إيبسوم النص الشكلي القياسي في الصناعة.</p>
-                    <a href="#" class="read-more">
+                    <a href="#listings" class="read-more">
                         <span class="read-more-highlight">اقرأ</span> المزيد
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
@@ -113,7 +162,7 @@
                         <span class="service-number">02</span>
                     </div>
                     <p class="service-desc">لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان لوريم إيبسوم النص الشكلي القياسي في الصناعة.</p>
-                    <a href="#" class="read-more">
+                    <a href="#listings" class="read-more">
                         <span class="read-more-highlight">اقرأ</span> المزيد
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
@@ -129,7 +178,7 @@
                         <span class="service-number">03</span>
                     </div>
                     <p class="service-desc">لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان لوريم إيبسوم النص الشكلي القياسي في الصناعة.</p>
-                    <a href="#" class="read-more">
+                    <a href="#listings" class="read-more">
                         <span class="read-more-highlight">اقرأ</span> المزيد
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
@@ -145,7 +194,7 @@
                         <span class="service-number">04</span>
                     </div>
                     <p class="service-desc">لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان لوريم إيبسوم النص الشكلي القياسي في الصناعة.</p>
-                    <a href="#" class="read-more">
+                    <a href="#listings" class="read-more">
                         <span class="read-more-highlight">اقرأ</span> المزيد
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
@@ -171,11 +220,11 @@
                         لوريم إيبسوم هو ببساطة نص شكلي يستخدم في صناعة الطباعة والتنضيد. كان لوريم إيبسوم النص الشكلي القياسي في الصناعة منذ القرن الخامس عشر، عندما قامت مطبعة مجهولة بأخذ مجموعة من الأحرف.
                     </p>
                     <div class="fav-actions">
-                        <a href="#" class="btn-outline">
+                        <a href="#calculator" class="btn-outline">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                             اتصل بنا
                         </a>
-                        <a href="#" class="btn-solid">استكشف المزيد</a>
+                        <a href="#listings" class="btn-solid">استكشف المزيد</a>
                     </div>
                 </div>
 
@@ -183,7 +232,7 @@
         </section>
 
         <!-- سكشن ليه تختارنا -->
-        <section class="features">
+        <section class="features" id="features">
             <div class="container" style="padding: 0;">
                 <h2 class="section-title" style="text-align: center;">لماذا تختارنا</h2>
                 <div class="features-grid">
@@ -217,7 +266,7 @@
         </section>
 
         <!-- سكشن بيوت في مدن مختلفة -->
-        <section class="cities">
+        <section class="cities" id="cities">
             <div class="cities-header">
                 <h2 class="section-title" style="margin-bottom: 0;">مساكن في مدن متعددة</h2>
                 <div class="slider-controls">
@@ -278,14 +327,14 @@
         <!-- الفوتر -->
         <footer>
             <div class="footer-top">
-                <a href="#" class="logo">العقارات</a>
+                <a href="#top" class="logo">العقارات</a>
                 <nav class="footer-links">
-                    <a href="#">الرئيسية</a>
-                    <a href="#">عن الشركة</a>
-                    <a href="#">الخدمات</a>
-                    <a href="#">معرض الأعمال</a>
-                    <a href="#">المدونة</a>
-                    <a href="#">اتصل بنا</a>
+                    <a href="#top">الرئيسية</a>
+                    <a href="#features">عن الشركة</a>
+                    <a href="#services">الخدمات</a>
+                    <a href="#listings">معرض الأعمال</a>
+                    <a href="#listings">العقارات</a>
+                    <a href="#calculator">اتصل بنا</a>
                 </nav>
             </div>
             <div class="footer-bottom">
@@ -320,5 +369,7 @@
         });
     </script>
 
+    <script src="listings-data.js"></script>
+    <script src="listings.js"></script>
 </body>
 </html>

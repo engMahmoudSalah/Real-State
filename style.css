@@ -766,3 +766,47 @@ footer {
     .fav-images { margin: 0; }
 }
 
+
+/* ===== العقارات: بحث وفلاتر وحاسبة واستفسار ===== */
+.listings, .calculator { padding: 60px 0 20px; position: relative; z-index: 2; }
+.ls-note { color: var(--text-muted); font-size: 14px; margin: 6px 0 16px; text-align: center; }
+.ls-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 18px; box-shadow: var(--shadow-sm); align-items: center; }
+.ls-filters input[type=search], .ls-filters select, .mc-card input, .iq-box input, .iq-box textarea { width: 100%; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface); color: var(--text-main); font: inherit; }
+.ls-filters input:focus, .ls-filters select:focus, .mc-card input:focus, .iq-box input:focus, .iq-box textarea:focus { outline: 3px solid rgba(164,90,35,.28); border-color: var(--brand); }
+.ls-checkbox { display: flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+.ls-count { margin: 16px 4px 8px; color: var(--text-muted); font-size: 14px; min-height: 22px; }
+.ls-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+.ls-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform .25s, box-shadow .25s; }
+.ls-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+.ls-thumb { position: relative; height: 150px; display: grid; place-items: center; background: linear-gradient(135deg, #f3d9c2, #e9b98f); }
+.ls-thumb.t-villa { background: linear-gradient(135deg, #d9e8d2, #a9cfa0); }
+.ls-thumb.t-office { background: linear-gradient(135deg, #d6e2f0, #a5bddb); }
+.ls-thumb.t-land { background: linear-gradient(135deg, #e6e1c2, #cfc58a); }
+.ls-thumb.t-chalet { background: linear-gradient(135deg, #cfe9ee, #93cdd8); }
+.ls-ico { font-size: 54px; }
+.ls-tag { position: absolute; top: 12px; right: 12px; background: var(--brand); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; }
+.ls-fav { position: absolute; top: 8px; left: 8px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.9); color: #b3261e; font-size: 22px; cursor: pointer; line-height: 1; }
+.ls-fav.on { background: #fff; }
+.ls-body { padding: 16px 18px 18px; }
+.ls-title { font-size: 18px; margin-bottom: 4px; }
+.ls-city, .ls-meta { color: var(--text-muted); font-size: 14px; }
+.ls-price { color: var(--brand); font-weight: 800; font-size: 20px; margin: 10px 0 12px; }
+.ls-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ls-btn { background: var(--brand); color: #fff; border: 2px solid var(--brand); border-radius: 999px; padding: 9px 18px; font: inherit; font-weight: 700; font-size: 14px; cursor: pointer; transition: background .2s; }
+.ls-btn:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+.ls-btn.ghost { background: transparent; color: var(--brand); }
+.ls-btn.ghost:hover { background: var(--brand); color: #fff; }
+.ls-btn:disabled { opacity: .6; cursor: wait; }
+.ls-empty { text-align: center; padding: 40px 0; color: var(--text-muted); }
+.mc-card { max-width: 760px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 22px; padding: 26px; box-shadow: var(--shadow-sm); }
+.mc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.mc-grid label, .iq-box label { display: block; font-weight: 600; font-size: 14px; }
+.mc-grid input, .iq-box input, .iq-box textarea { margin-top: 6px; }
+.mc-result { font-size: 30px; font-weight: 800; color: var(--brand); margin: 20px 0 4px; }
+.mc-total { color: var(--text-muted); font-size: 14px; }
+.iq-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: grid; place-items: center; padding: 16px; }
+.iq-overlay[hidden] { display: none; }
+.iq-box { position: relative; background: var(--card-bg); color: var(--text-main); border-radius: 22px; padding: 26px; width: 100%; max-width: 440px; max-height: 92vh; overflow: auto; display: grid; gap: 12px; }
+.iq-x { position: absolute; top: 10px; left: 14px; background: none; border: 0; font-size: 28px; color: var(--text-muted); cursor: pointer; }
+@media (max-width: 600px) { .ls-grid { grid-template-columns: 1fr; } .mc-result { font-size: 24px; } }
+html{scroll-behavior:smooth}

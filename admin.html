@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>الاستفسارات | لوحة صاحب الموقع</title>
+<link rel="stylesheet" href="style.css">
+<style>.adm{max-width:820px;margin:40px auto;padding:0 16px}.adm .box{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:20px;margin:14px 0}.adm .box b{color:var(--brand)}.adm .meta{color:var(--text-muted);font-size:13px}.adm input{padding:11px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--surface);color:var(--text-main);font:inherit;width:100%;max-width:420px}</style>
+</head>
+<body>
+<main class="adm">
+<h1>استفسارات العملاء</h1>
+<p class="ls-note" style="text-align:start">ادخل مفتاح صاحب الموقع (محفوظ عندك). المفتاح مبيتخزنش في المتصفح.</p>
+<form id="a-form"><input id="a-key" type="password" autocomplete="current-password" placeholder="مفتاح صاحب الموقع" required> <button class="ls-btn" type="submit">عرض</button></form>
+<p id="a-msg" class="ls-note" style="text-align:start" role="status"></p>
+<div id="a-list"></div>
+</main>
+<script>
+(function(){
+var API="https://gfk-api.mahmodsalah.workers.dev/v1/real-state/inq",key="";
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function load(){
+  fetch(API,{headers:{"X-Admin-Key":key}}).then(function(r){
+    if(r.status===401){document.getElementById("a-msg").textContent="المفتاح غلط.";return null}
+    return r.json()}).then(function(d){
+    if(!d)return;var l=document.getElementById("a-list");l.textContent="";
+    document.getElementById("a-msg").textContent=d.count?("عدد الاستفسارات: "+d.count):"مفيش استفسارات لسه.";
+    d.items.forEach(function(q){var b=el("div","box");b.appendChild(el("b","",q.name));b.appendChild(el("p","",q.message));
+      b.appendChild(el("p","meta",(q.phone||q.email)+" · "+(q.ref||"")+" · "+new Date(q.at).toLocaleString("ar-EG")));
+      var del=el("button","ls-btn ghost","حذف");del.type="button";del.addEventListener("click",function(){if(!confirm("تحذف الاستفسار ده؟"))return;fetch(API+"/"+q.id,{method:"DELETE",headers:{"X-Admin-Key":key}}).then(load)});b.appendChild(del);l.appendChild(b)})
+  }).catch(function(){document.getElementById("a-msg").textContent="السيرفر مش متاح."})
+}
+document.getElementById("a-form").addEventListener("submit",function(e){e.preventDefault();key=document.getElementById("a-key").value;load()});
+})();
+</script>
+</body>
+</html>
