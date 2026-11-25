@@ -3,34 +3,111 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
-<title>الاستفسارات | لوحة صاحب الموقع</title>
+<title>إدارة الاستفسارات | لوحة صاحب الموقع</title>
 <link rel="stylesheet" href="style.css">
-<style>.adm{max-width:820px;margin:40px auto;padding:0 16px}.adm .box{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:20px;margin:14px 0}.adm .box b{color:var(--brand)}.adm .meta{color:var(--text-muted);font-size:13px}.adm input{padding:11px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--surface);color:var(--text-main);font:inherit;width:100%;max-width:420px}</style>
+<style>
+.adm{max-width:960px;margin:32px auto;padding:0 16px}
+.adm h1{margin:0 0 6px}
+.adm input,.adm select{padding:11px 14px;border-radius:12px;border:1px solid var(--border-color);background:var(--surface);color:var(--text-main);font:inherit}
+.adm .bar{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;align-items:center}
+.adm .bar input[type=search]{flex:1;min-width:180px}
+.adm .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+.adm .stat{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:14px;text-align:center}
+.adm .stat b{display:block;font-size:26px;color:var(--brand)}
+.adm .stat span{font-size:13px;color:var(--text-muted)}
+.adm .box{background:var(--card-bg);border:1px solid var(--border-color);border-radius:20px;padding:18px;margin:12px 0;border-inline-start:5px solid var(--brand)}
+.adm .box.done{opacity:.65;border-inline-start-color:#2e9e5b}
+.adm .box.read{border-inline-start-color:var(--border-color)}
+.adm .box .top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.adm .box b{color:var(--brand)}
+.adm .box p{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.adm .meta{color:var(--text-muted);font-size:13px}
+.adm .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.adm .acts a,.adm .acts button{font-size:13px;padding:7px 12px}
+.adm .tag{font-size:12px;border-radius:99px;padding:2px 10px;border:1px solid var(--border-color)}
+.adm .tag.new{background:var(--brand);color:#fff;border-color:var(--brand)}
+@media print{.bar,form,.acts{display:none}}
+</style>
 </head>
 <body>
 <main class="adm">
-<h1>استفسارات العملاء</h1>
-<p class="ls-note" style="text-align:start">ادخل مفتاح صاحب الموقع (محفوظ عندك). المفتاح مبيتخزنش في المتصفح.</p>
+<h1>إدارة الاستفسارات</h1>
+<p class="ls-note" style="text-align:start">ادخل مفتاح صاحب الموقع. المفتاح بيتحفظ لحد ما تقفل التبويب بس. حالة "اتقرا / اتنفذ" بتتحفظ على جهازك.</p>
 <form id="a-form"><input id="a-key" type="password" autocomplete="current-password" placeholder="مفتاح صاحب الموقع" required> <button class="ls-btn" type="submit">عرض</button></form>
 <p id="a-msg" class="ls-note" style="text-align:start" role="status"></p>
-<div id="a-list"></div>
+<section id="a-main" hidden>
+  <div class="stats" id="a-stats"></div>
+  <div class="bar">
+    <input id="a-q" type="search" placeholder="ابحث بالاسم أو الرقم أو الرسالة" aria-label="بحث">
+    <select id="a-f" aria-label="الحالة"><option value="all">كل الحالات</option><option value="new">جديد</option><option value="read">اتقرا</option><option value="done">اتنفذ</option></select>
+    <select id="a-ref" aria-label="العقار"><option value="">كل العقارات</option></select>
+    <select id="a-s" aria-label="الترتيب"><option value="new">الأحدث أولا</option><option value="old">الأقدم أولا</option></select>
+    <button class="ls-btn ghost" id="a-r" type="button">تحديث</button>
+    <button class="ls-btn ghost" id="a-csv" type="button">تصدير CSV</button>
+  </div>
+  <div id="a-list"></div>
+</section>
 </main>
 <script>
 (function(){
-var API="https://gfk-api.mahmodsalah.workers.dev/v1/real-state/inq",key="";
+var API="https://gfk-api.mahmodsalah.workers.dev/v1/real-state/inq",key=sessionStorage.getItem("rs_adm")||"",items=[],st={};
+try{st=JSON.parse(localStorage.getItem("rs_inq_state")||"{}")}catch(e){}
+function $(i){return document.getElementById(i)}
 function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function save(){try{localStorage.setItem("rs_inq_state",JSON.stringify(st))}catch(e){}}
+function status(q){return st[q.id]||"new"}
+function digits(p){return String(p||"").replace(/[^\d+]/g,"")}
+function msg(t){$("a-msg").textContent=t}
 function load(){
+  msg("جاري التحميل...");
   fetch(API,{headers:{"X-Admin-Key":key}}).then(function(r){
-    if(r.status===401){document.getElementById("a-msg").textContent="المفتاح غلط.";return null}
+    if(r.status===401){msg("المفتاح غلط.");sessionStorage.removeItem("rs_adm");$("a-main").hidden=true;return null}
     return r.json()}).then(function(d){
-    if(!d)return;var l=document.getElementById("a-list");l.textContent="";
-    document.getElementById("a-msg").textContent=d.count?("عدد الاستفسارات: "+d.count):"مفيش استفسارات لسه.";
-    d.items.forEach(function(q){var b=el("div","box");b.appendChild(el("b","",q.name));b.appendChild(el("p","",q.message));
-      b.appendChild(el("p","meta",(q.phone||q.email)+" · "+(q.ref||"")+" · "+new Date(q.at).toLocaleString("ar-EG")));
-      var del=el("button","ls-btn ghost","حذف");del.type="button";del.addEventListener("click",function(){if(!confirm("تحذف الاستفسار ده؟"))return;fetch(API+"/"+q.id,{method:"DELETE",headers:{"X-Admin-Key":key}}).then(load)});b.appendChild(del);l.appendChild(b)})
-  }).catch(function(){document.getElementById("a-msg").textContent="السيرفر مش متاح."})
+    if(!d)return;items=d.items||[];sessionStorage.setItem("rs_adm",key);$("a-main").hidden=false;
+    var refs={};items.forEach(function(q){if(q.ref)refs[q.ref]=1});
+    var sel=$("a-ref"),cur=sel.value;sel.length=1;Object.keys(refs).forEach(function(r){var o=el("option","",r);o.value=r;sel.appendChild(o)});sel.value=cur;
+    msg("");render()
+  }).catch(function(){msg("السيرفر مش متاح.")})
 }
-document.getElementById("a-form").addEventListener("submit",function(e){e.preventDefault();key=document.getElementById("a-key").value;load()});
+function render(){
+  var c={all:items.length,"new":0,read:0,done:0};items.forEach(function(q){c[status(q)]++});
+  var s=$("a-stats");s.textContent="";
+  [["الإجمالي",c.all],["جديد",c["new"]],["اتقرا",c.read],["اتنفذ",c.done]].forEach(function(x){var b=el("div","stat");b.appendChild(el("b","",x[1]));b.appendChild(el("span","",x[0]));s.appendChild(b)});
+  var q=$("a-q").value.trim().toLowerCase(),f=$("a-f").value,ref=$("a-ref").value;
+  var list=items.filter(function(i){
+    if(f!=="all"&&status(i)!==f)return false;if(ref&&i.ref!==ref)return false;
+    return !q||[i.name,i.phone,i.email,i.message,i.ref].join(" ").toLowerCase().indexOf(q)>-1});
+  list.sort(function(a,b){return $("a-s").value==="old"?Date.parse(a.at)-Date.parse(b.at):Date.parse(b.at)-Date.parse(a.at)});
+  var l=$("a-list");l.textContent="";
+  if(!list.length){l.appendChild(el("p","ls-note",items.length?"مفيش نتايج للفلتر ده.":"مفيش استفسارات لسه."));return}
+  list.forEach(function(q){
+    var stt=status(q),b=el("div","box "+stt),top=el("div","top");
+    top.appendChild(el("b","",q.name));
+    top.appendChild(el("span","tag"+(stt==="new"?" new":""),{new:"جديد",read:"اتقرا",done:"اتنفذ"}[stt]));
+    b.appendChild(top);b.appendChild(el("p","",q.message));
+    b.appendChild(el("p","meta",[q.phone,q.email,q.ref].filter(Boolean).join(" · ")+" · "+new Date(q.at).toLocaleString("ar-EG")));
+    var a=el("div","acts");
+    var ph=digits(q.phone);
+    if(ph){var t=el("a","ls-btn ghost","اتصال");t.href="tel:"+ph;a.appendChild(t);
+      var w=el("a","ls-btn ghost","واتساب");w.href="https://wa.me/"+ph.replace(/^\+/,"").replace(/^0/,"20");w.target="_blank";w.rel="noopener noreferrer";a.appendChild(w)}
+    if(q.email&&/^[^\s@]+@[^\s@]+$/.test(q.email)){var m=el("a","ls-btn ghost","إيميل");m.href="mailto:"+q.email;a.appendChild(m)}
+    [["read","اتقرا"],["done","اتنفذ"],["new","رجعه جديد"]].forEach(function(x){
+      if(x[0]===stt)return;var k=el("button","ls-btn ghost",x[1]);k.type="button";
+      k.addEventListener("click",function(){if(x[0]==="new")delete st[q.id];else st[q.id]=x[0];save();render()});a.appendChild(k)});
+    var del=el("button","ls-btn ghost","حذف");del.type="button";
+    del.addEventListener("click",function(){if(!confirm("تحذف الاستفسار ده نهائي؟"))return;
+      fetch(API+"/"+q.id,{method:"DELETE",headers:{"X-Admin-Key":key}}).then(function(r){if(r.ok){delete st[q.id];save();load()}else msg("فشل الحذف.")})});
+    a.appendChild(del);b.appendChild(a);l.appendChild(b)})
+}
+function csvCell(v){v=String(v==null?"":v);if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
+$("a-csv").addEventListener("click",function(){
+  var rows=[["الاسم","الموبايل","الإيميل","العقار","الرسالة","التاريخ","الحالة"]].concat(items.map(function(q){return[q.name,q.phone,q.email,q.ref,q.message,new Date(q.at).toISOString(),status(q)]}));
+  var blob=new Blob(["\ufeff"+rows.map(function(r){return r.map(csvCell).join(",")}).join("\r\n")],{type:"text/csv;charset=utf-8"});
+  var a=el("a");a.href=URL.createObjectURL(blob);a.download="inquiries.csv";document.body.appendChild(a);a.click();a.remove()});
+$("a-r").addEventListener("click",load);
+["a-q","a-f","a-ref","a-s"].forEach(function(i){$(i).addEventListener("input",render)});
+$("a-form").addEventListener("submit",function(e){e.preventDefault();key=$("a-key").value;load()});
+if(key)load();
 })();
 </script>
 </body>
