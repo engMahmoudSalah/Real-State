@@ -29,3 +29,22 @@ body{font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif}
 @media (prefers-reduced-motion:reduce){.hline,.sun,.c1,.c2,.ap,.ae .asign{animation:none}.hline{stroke-dashoffset:0}}
 
 .ic{display:inline-flex;vertical-align:middle;width:1.1em;height:1.1em}.ic svg{width:100%;height:100%}.specs span{display:inline-flex;align-items:center;gap:4px}.ph .ic{width:3rem;height:3rem;color:var(--muted)}.btn .ic{margin-inline-end:4px}
+
+/* Aqar identity: sand paper, deep teal ink, terracotta. Fonts: IBM Plex Sans Arabic + Reem Kufi (SIL OFL 1.1), self-hosted. */
+@font-face{font-family:"Plex Ar";font-weight:400;font-display:swap;src:url(/fonts/ibm-plex-sans-arabic-arabic-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Plex Ar";font-weight:600;font-display:swap;src:url(/fonts/ibm-plex-sans-arabic-arabic-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Reem Kufi";font-weight:700;font-display:swap;src:url(/fonts/reem-kufi-arabic-700-normal.woff2) format("woff2")}
+:root{--bg:#efe6d4;--surface:#fbf6ea;--surface2:#e6dac1;--text:#12302f;--muted:#4f5f58;--border:#c7b793;--accent:#a8431f;--accent-t:#fbf6ea;--accent-soft:#f1d5c0;--shadow:0 1px 0 rgba(18,48,47,.1),3px 4px 0 rgba(18,48,47,.08);--r:4px}
+[data-theme=dark]{--bg:#0f1f1e;--surface:#16292a;--surface2:#1e3433;--text:#efe6d4;--muted:#b3bfb4;--border:#34504d;--accent:#ee8a5e;--accent-t:#0f1f1e;--accent-soft:#3a2a20;--shadow:0 1px 0 rgba(0,0,0,.5),3px 4px 0 rgba(0,0,0,.35)}
+body{font-family:"Plex Ar","Noto Sans Arabic",system-ui,sans-serif;background:var(--bg)}
+h1,h2,h3,.brand{font-family:"Reem Kufi","Plex Ar",sans-serif;font-weight:700;letter-spacing:0}
+.hero2{background-color:var(--surface);border:1.5px solid var(--text);border-radius:var(--r);text-align:start;box-shadow:6px 7px 0 var(--text);padding-inline:var(--sp-4)}
+.hero2 h1{font-size:clamp(2rem,7vw,3.4rem);line-height:1.15;max-width:14ch}
+.card,.lcard,.col{border-radius:var(--r);border:1.5px solid var(--text);box-shadow:var(--shadow);background:var(--surface)}
+.topbar{background:var(--bg);border-bottom:2px solid var(--text);backdrop-filter:none}
+.btn,input,select,textarea{border-radius:var(--r)}
+.btn.pri{background:var(--accent);color:var(--accent-t);border:1.5px solid var(--text);box-shadow:2px 3px 0 var(--text)}
+.btn.pri:active{box-shadow:none;transform:translate(2px,3px)}
+.price{font-family:"Plex Ar",sans-serif;font-weight:600}
+.card{transition:transform .15s}.card:hover{transform:translate(-1px,-2px);box-shadow:3px 5px 0 var(--text)}
+.ph{background:var(--surface2)}
