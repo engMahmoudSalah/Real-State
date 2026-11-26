@@ -51,9 +51,21 @@ async function home() {
     more.replaceChildren(d.more ? h("button", { class: "btn", onclick: () => { F.page++; run(true); } }, "عرض المزيد") : null);
     if (!cities.length) { cities = d.cities; citySel.replaceChildren(sel("city", "المدينة", [["", "كل المدن"], ...cities.map((c) => [c, c])])); }
   };
+  const savedBox = h("div", { class: "row" });
+  const loadSaved = async () => {
+    if (!S.user) return;
+    let d; try { d = await api("/api/searches"); } catch { return; }
+    const keys = ["q", "city", "type", "purpose", "min", "max", "beds", "sort"];
+    savedBox.replaceChildren(h("button", { class: "btn sm", type: "button", onclick: () => guard(async () => {
+      const filters = {}; keys.forEach((k) => { if (F[k] && !(k === "sort" && F[k] === "new")) filters[k] = F[k]; });
+      await api("/api/searches", { name: F.q || [F.city, TYPES[F.type], F.purpose === "sale" ? "للبيع" : F.purpose === "rent" ? "للإيجار" : ""].filter(Boolean).join(" ") || "", filters }); toast("تم حفظ البحث"); loadSaved();
+    }) }, "احفظ هذا البحث"), ...d.searches.map((x) => h("span", { class: "badge row", style: "gap:6px;padding:4px 8px" },
+      h("a", { href: "#/", onclick: (e) => { e.preventDefault(); Object.assign(F, { q: "", city: "", type: "", purpose: "", min: "", max: "", beds: "", sort: "new", page: 0 }, Object.fromEntries(new URLSearchParams(x.qs))); home(); } }, x.name),
+      h("button", { type: "button", "aria-label": "حذف البحث", style: "background:none;border:0;cursor:pointer;color:inherit;font:inherit", onclick: () => guard(async () => { await api("/api/searches/" + x.id, null, "DELETE"); loadSaved(); }) }, "×"))));
+  };
   shell(h("div", { class: "stack" }, h("section", { class: "hero2" }, h("div", { class: "sky", html: skyline() }), h("div", { html: blueprintHero() }), h("h1", {}, "لاقي بيتك الجاي في مصر"), h("p", { class: "muted" }, "شقق وفلل ومكاتب وشاليهات للبيع والإيجار. احفظ المفضلة وتواصل مع المعلن مباشرة."),
-    h("div", { class: "filters" }, inp("q", "بحث", "المدينة أو المنطقة أو العنوان"), citySel, sel("purpose", "الغرض", [["", "الكل"], ["sale", "للبيع"], ["rent", "للإيجار"]]), sel("type", "النوع", [["", "الكل"], ...Object.entries(TYPES)]), inp("min", "أقل سعر", "ج.م", "number"), inp("max", "أعلى سعر", "ج.م", "number"), sel("beds", "غرف النوم", [["", "أي عدد"], ["1", "1+"], ["2", "2+"], ["3", "3+"], ["4", "4+"]]), sel("sort", "الترتيب", [["new", "الأحدث"], ["price_asc", "السعر: الأقل"], ["price_desc", "السعر: الأعلى"], ["area_desc", "المساحة"]]))), grid, more), "home");
-  run();
+    savedBox, h("div", { class: "filters" }, inp("q", "بحث", "المدينة أو المنطقة أو العنوان"), citySel, sel("purpose", "الغرض", [["", "الكل"], ["sale", "للبيع"], ["rent", "للإيجار"]]), sel("type", "النوع", [["", "الكل"], ...Object.entries(TYPES)]), inp("min", "أقل سعر", "ج.م", "number"), inp("max", "أعلى سعر", "ج.م", "number"), sel("beds", "غرف النوم", [["", "أي عدد"], ["1", "1+"], ["2", "2+"], ["3", "3+"], ["4", "4+"]]), sel("sort", "الترتيب", [["new", "الأحدث"], ["price_asc", "السعر: الأقل"], ["price_desc", "السعر: الأعلى"], ["area_desc", "المساحة"]]))), grid, more), "home");
+  run(); loadSaved();
 }
 const mortgage = (price) => {
   const down = h("input", { type: "number", value: 20, min: 0, max: 90 }), yrs = h("input", { type: "number", value: 15, min: 1, max: 30 }), rate = h("input", { type: "number", value: 18, step: 0.5, min: 0, max: 40 }), out = h("div", { class: "price" });

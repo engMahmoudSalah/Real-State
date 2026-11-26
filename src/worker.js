@@ -15,6 +15,7 @@ export class Hub extends BaseHub {
     return `ALTER TABLE users ADD COLUMN kind TEXT;
 CREATE TABLE IF NOT EXISTS listings(id TEXT PRIMARY KEY, owner TEXT NOT NULL, title TEXT NOT NULL, descr TEXT NOT NULL DEFAULT '', city TEXT NOT NULL, district TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, purpose TEXT NOT NULL DEFAULT 'sale', beds INTEGER NOT NULL DEFAULT 0, baths INTEGER NOT NULL DEFAULT 0, area INTEGER NOT NULL, price INTEGER NOT NULL, features TEXT NOT NULL DEFAULT '', images TEXT NOT NULL DEFAULT '', phone TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'pending', reason TEXT NOT NULL DEFAULT '', views INTEGER NOT NULL DEFAULT 0, sample INTEGER NOT NULL DEFAULT 0, created INTEGER NOT NULL, updated INTEGER NOT NULL);
 CREATE INDEX IF NOT EXISTS l_status ON listings(status);
+CREATE TABLE IF NOT EXISTS saved_searches(id TEXT PRIMARY KEY, uid TEXT NOT NULL, name TEXT NOT NULL, qs TEXT NOT NULL, created INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS favs(uid TEXT NOT NULL, listing TEXT NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY(uid,listing));
 CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner TEXT NOT NULL, from_uid TEXT, name TEXT NOT NULL, phone TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', msg TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'new', reply TEXT NOT NULL DEFAULT '', created INTEGER NOT NULL, replied INTEGER)`;
   }
@@ -49,7 +50,7 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
   }
   purgeUsers(ids) { const n = ids.map(() => "?").join(","); this.run(`DELETE FROM favs WHERE uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids); this.run(`DELETE FROM inq WHERE owner IN (${n}) OR from_uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids, ...ids); this.run(`DELETE FROM listings WHERE owner IN (${n})`, ...ids); }
   exportData(u) {
-    return { listings: this.q("SELECT * FROM listings WHERE owner=? LIMIT 2000", u.id), favourites: this.q("SELECT listing,ts FROM favs WHERE uid=? LIMIT 2000", u.id), inquiries_sent: this.q("SELECT listing,name,phone,email,msg,created FROM inq WHERE from_uid=? LIMIT 1000", u.id) };
+    return { listings: this.q("SELECT * FROM listings WHERE owner=? LIMIT 2000", u.id), saved_searches: this.q("SELECT name,qs,created FROM saved_searches WHERE uid=?", u.id), favourites: this.q("SELECT listing,ts FROM favs WHERE uid=? LIMIT 2000", u.id), inquiries_sent: this.q("SELECT listing,name,phone,email,msg,created FROM inq WHERE from_uid=? LIMIT 1000", u.id) };
   }
   async app(c) {
     this.seed();
@@ -91,6 +92,17 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
     }
     const u = this.need(c);
     if (path === "/api/me/kind" && method === "POST") { if (u.kind) bad("تم اختيار نوع الحساب بالفعل."); if (!["buyer", "agent"].includes(body.kind)) bad("اختر نوع الحساب."); this.run("UPDATE users SET kind=? WHERE id=?", body.kind, u.id); return { user: this.publicUser({ ...u, kind: body.kind }) }; }
+    if (path === "/api/searches" && method === "GET") return { searches: this.q("SELECT id,name,qs,created FROM saved_searches WHERE uid=? ORDER BY created DESC LIMIT 20", u.id) };
+    if (path === "/api/searches" && method === "POST") {
+      this.limit("ss:" + u.id, 30, 3600e3);
+      const ok = ["q", "city", "type", "purpose", "min", "max", "beds", "sort"], qp = new URLSearchParams();
+      for (const k of ok) { const v = clean(body.filters?.[k], 80); if (v) qp.set(k, v); }
+      if (!qp.toString()) bad("اختر فلتر واحد على الأقل قبل حفظ البحث.");
+      if (this.one("SELECT COUNT(*) n FROM saved_searches WHERE uid=?", u.id).n >= 10) bad("وصلت للحد الأقصى: ١٠ عمليات بحث محفوظة.", 402);
+      const id = rid(6); this.run("INSERT INTO saved_searches(id,uid,name,qs,created) VALUES(?,?,?,?,?)", id, u.id, clean(body.name, 60) || qp.toString().slice(0, 40), qp.toString(), now());
+      this.audit(u.id, "search_saved"); return { id };
+    }
+    if ((m = path.match(/^\/api\/searches\/([A-Za-z0-9]+)$/)) && method === "DELETE") { this.run("DELETE FROM saved_searches WHERE id=? AND uid=?", m[1], u.id); return { ok: true }; }
     if (path === "/api/favs" && method === "GET") return { listings: this.q("SELECT l.* FROM listings l JOIN favs f ON f.listing=l.id WHERE f.uid=? AND l.status='approved' ORDER BY f.ts DESC", u.id).map((l) => this.out(l)) };
     if ((m = path.match(/^\/api\/favs\/([A-Za-z0-9]+)$/))) {
       if (method === "POST") { if (!this.one("SELECT 1 x FROM listings WHERE id=? AND status='approved'", m[1])) bad("العقار غير موجود.", 404); this.run("INSERT OR IGNORE INTO favs(uid,listing,ts) VALUES(?,?,?)", u.id, m[1], now()); return { ok: true }; }
