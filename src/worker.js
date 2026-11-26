@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
     o.beds = num("beds", old.beds ?? 0, 30); o.baths = num("baths", old.baths ?? 0, 30); o.area = num("area", old.area ?? 0, 1e6); o.price = num("price", old.price ?? 0, 1e11);
     if (o.area < 1) bad("اكتب المساحة بالمتر."); if (o.price < 1) bad("اكتب السعر.");
     o.features = b.features !== undefined ? (Array.isArray(b.features) ? b.features : String(b.features).split(",")).map((x) => clean(x, 30).replace(/[,|]/g, " ")).filter(Boolean).slice(0, 12).join(",") : old.features || "";
-    if (b.images !== undefined) { const im = (Array.isArray(b.images) ? b.images : []).map((x) => String(x).trim()).filter(Boolean).slice(0, 5); for (const x of im) { if (!/^https:\/\/[^\s|]{4,500}$/.test(x)) bad("روابط الصور لازم تبدأ بـ https."); } o.images = im.join("|"); } else o.images = old.images || "";
+    if (b.images !== undefined) { const im = (Array.isArray(b.images) ? b.images : []).map((x) => String(x).trim()).filter(Boolean).slice(0, 5); for (const x of im) { if (!/^https:\/\/[^\s|]{4,500}$/.test(x)) bad("روابط الصور لازم تبدأ بـ https."); let uu; try { uu = new URL(x); } catch { bad("رابط صورة غير صالح."); } if (uu.username || uu.password) bad("رابط الصورة ما ينفعش يحتوي على اسم مستخدم أو كلمة مرور."); } o.images = im.join("|"); } else o.images = old.images || "";
     o.phone = b.phone !== undefined ? clean(b.phone, 20).replace(/[^0-9+ ]/g, "") : old.phone || "";
     return o;
   }
