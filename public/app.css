@@ -27,3 +27,5 @@ body{font-family:"Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif}
 .ae .ap1,.ae .ap2{fill:none;stroke:var(--muted);stroke-width:3;stroke-linecap:round}.ae .ap3{stroke:var(--muted);stroke-width:2.5;fill:none}.ae .ap4{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2}.ae .atx{fill:var(--accent);font:800 17px system-ui,"Noto Sans Arabic",sans-serif}.ae .ap5{fill:var(--surface);stroke:var(--accent);stroke-width:2.2;stroke-linejoin:round}.ae .ap6{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8}
 .ae .asign{transform-origin:72px 12px;animation:sway 3.5s ease-in-out infinite}@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.hline,.sun,.c1,.c2,.ap,.ae .asign{animation:none}.hline{stroke-dashoffset:0}}
+
+.ic{display:inline-flex;vertical-align:middle;width:1.1em;height:1.1em}.ic svg{width:100%;height:100%}.specs span{display:inline-flex;align-items:center;gap:4px}.ph .ic{width:3rem;height:3rem;color:var(--muted)}.btn .ic{margin-inline-end:4px}

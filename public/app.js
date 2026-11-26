@@ -8,7 +8,8 @@ const toggleTheme = initTheme();
 const S = { user: null };
 const app = $("#app");
 const TYPES = { apartment: "شقة", villa: "فيلا", office: "مكتب", land: "أرض", chalet: "شاليه", shop: "محل" };
-const ICON = { apartment: "🏢", villa: "🏡", office: "🏬", land: "🌳", chalet: "🏖️", shop: "🏪" };
+const IC = {"apartment": "<rect x=\"4\" y=\"2\" width=\"16\" height=\"20\" rx=\"2\"/><path d=\"M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01\"/>", "villa": "<path d=\"M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z\"/><path d=\"M9 21v-7h6v7\"/>", "office": "<rect x=\"3\" y=\"7\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18\"/>", "land": "<path d=\"M12 22v-7M12 15c-4 0-6-3-6-6 0-4 3-7 6-7s6 3 6 7c0 3-2 6-6 6z\"/>", "chalet": "<path d=\"M2 20c3 0 3-2 6-2s3 2 6 2 3-2 8-2M5 14l7-10 7 10z\"/>", "shop": "<path d=\"M3 9l2-5h14l2 5M3 9v11h18V9M3 9c0 2 4 2 4 0 0 2 4 2 5 0 1 2 5 2 5 0 0 2 4 2 4 0M10 20v-5h4v5\"/>", "bed": "<path d=\"M2 18v-8M2 14h20v4M22 14v-2a3 3 0 0 0-3-3h-8v5M6 11h.01\"/>", "bath": "<path d=\"M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zM6 12V6a2 2 0 0 1 3.5-1.3M7 19l-1 2M17 19l1 2\"/>", "area": "<path d=\"M3 3h18v18H3zM3 9h6M9 3v6M21 15h-6M15 21v-6\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"m21 21-4.3-4.3\"/>", "tag": "<path d=\"M20 12 12 20a2 2 0 0 1-2.8 0L3 13.8V4h9.8L20 11.2a1 1 0 0 1 0 .8zM7.5 8h.01\"/>", "phone": "<path d=\"M22 17v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1z\"/>", "mail": "<rect x=\"2\" y=\"4\" width=\"20\" height=\"16\" rx=\"2\"/><path d=\"m22 7-10 6L2 7\"/>"};
+const ic = (n) => { const s = document.createElement("span"); s.className = "ic"; s.setAttribute("aria-hidden", "true"); s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[n]}</svg>`; return s; };
 const fmt = (n) => Number(n).toLocaleString("ar-EG");
 const money = (l) => `${fmt(l.price)} ج.م${l.purpose === "rent" ? " / شهر" : ""}`;
 const STATUS = { pending: ["قيد المراجعة", "warn"], approved: ["منشور", "ok"], rejected: ["مرفوض", "bad"], sold: ["تم البيع/التأجير", ""] };
@@ -32,8 +33,8 @@ function shareBtn(l) {
 }
 const card = (l, favs) => {
   const fav = S.user ? h("button", { class: "favb" + (l.fav ? " on" : ""), "aria-label": "المفضلة", "aria-pressed": !!l.fav, onclick: (e) => { e.preventDefault(); e.stopPropagation(); const btn = e.currentTarget; guard(async () => { await api(`/api/favs/${l.id}`, l.fav ? null : {}, l.fav ? "DELETE" : "POST"); l.fav = !l.fav; btn.classList.toggle("on", l.fav); }); } }, "♥") : null;
-  return h("a", { class: "card lcard", href: `#/l/${l.id}` }, h("div", { class: "ph" }, l.images[0] ? h("img", { src: l.images[0], alt: l.title, loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.target.replaceWith(document.createTextNode(ICON[l.type])) }) : ICON[l.type], h("span", { class: "badge acc tagc" }, l.purpose === "rent" ? "للإيجار" : "للبيع"), fav),
-    h("div", { class: "bd" }, h("div", { class: "price" }, money(l)), h("b", {}, l.title), h("div", { class: "muted small" }, `${l.city}${l.district ? "، " + l.district : ""}`), h("div", { class: "specs" }, l.beds ? h("span", {}, `🛏 ${l.beds}`) : null, l.baths ? h("span", {}, `🚿 ${l.baths}`) : null, h("span", {}, `📐 ${fmt(l.area)} م²`), h("span", {}, TYPES[l.type])), l.sample ? h("span", { class: "badge" }, "نموذجي") : null));
+  return h("a", { class: "card lcard", href: `#/l/${l.id}` }, h("div", { class: "ph" }, l.images[0] ? h("img", { src: l.images[0], alt: l.title, loading: "lazy", referrerpolicy: "no-referrer", onerror: (e) => e.target.replaceWith(ic(l.type)) }) : ic(l.type), h("span", { class: "badge acc tagc" }, l.purpose === "rent" ? "للإيجار" : "للبيع"), fav),
+    h("div", { class: "bd" }, h("div", { class: "price" }, money(l)), h("b", {}, l.title), h("div", { class: "muted small" }, `${l.city}${l.district ? "، " + l.district : ""}`), h("div", { class: "specs" }, l.beds ? h("span", {}, ic("bed"), ` ${l.beds}`) : null, l.baths ? h("span", {}, ic("bath"), ` ${l.baths}`) : null, h("span", {}, ic("area"), ` ${fmt(l.area)} م²`), h("span", {}, TYPES[l.type])), l.sample ? h("span", { class: "badge" }, "نموذجي") : null));
 };
 const F = { q: "", city: "", type: "", purpose: "", min: "", max: "", beds: "", sort: "new", page: 0 };
 async function home() {
@@ -82,7 +83,7 @@ async function favs() {
 }
 function chooseKind() {
   shell(h("div", { class: "card stack auth" }, h("h2", {}, "إنت هنا كـ إيه؟"), h("p", { class: "muted" }, "تقدر تتصفح وتتواصل كمشتري، أو تنشر إعلانات كوسيط/مالك."),
-    h("button", { class: "btn pri", onclick: () => pick("buyer") }, "🔎 مشتري / مستأجر"), h("button", { class: "btn", onclick: () => pick("agent") }, "🏷️ وسيط / مالك (أنشر إعلانات)")), "");
+    h("button", { class: "btn pri", onclick: () => pick("buyer") }, ic("search"), " مشتري / مستأجر"), h("button", { class: "btn", onclick: () => pick("agent") }, ic("tag"), " وسيط / مالك (أنشر إعلانات)")), "");
   const pick = (k) => guard(async () => { S.user = (await api("/api/me/kind", { kind: k })).user; location.hash = k === "agent" ? "#/dash" : "#/"; route(); });
 }
 const FORM = (l) => { l = l || { purpose: "sale", type: "apartment", beds: 2, baths: 1, features: [], images: [] }; return l; };
@@ -109,7 +110,7 @@ async function inbox() {
   const d = await api("/api/inbox");
   shell(h("div", { class: "stack" }, h("h1", {}, `الاستفسارات${d.unread ? ` (${d.unread} جديد)` : ""}`), d.inquiries.length ? d.inquiries.map((i) => { const rp = h("textarea", { placeholder: "اكتب ردك (بيظهر للمشتري لو عنده حساب)", style: "min-height:60px" }, i.reply || "");
     return h("div", { class: "card stack" }, h("div", { class: "row spread" }, h("b", {}, i.title), h("span", { class: "badge " + (i.status === "new" ? "warn" : "") }, ST[i.status])), h("div", {}, h("b", {}, i.name), h("span", { class: "muted small" }, ` · ${ago(i.created)}`)), h("div", { style: "white-space:pre-wrap" }, i.msg),
-      h("div", { class: "row small" }, i.phone ? h("a", { href: "tel:" + i.phone }, "📞 " + i.phone) : null, i.email ? h("a", { href: "mailto:" + i.email }, "✉️ " + i.email) : null), rp,
+      h("div", { class: "row small" }, i.phone ? h("a", { href: "tel:" + i.phone }, ic("phone"), " " + i.phone) : null, i.email ? h("a", { href: "mailto:" + i.email }, ic("mail"), " " + i.email) : null), rp,
       h("div", { class: "row" }, h("button", { class: "btn sm pri", onclick: () => guard(async () => { await api(`/api/inbox/${i.id}`, { reply: rp.value }); toast("تم حفظ الرد"); inbox(); }) }, "حفظ الرد"), ["read", "closed"].map((s) => h("button", { class: "btn sm", onclick: () => guard(async () => { await api(`/api/inbox/${i.id}`, { status: s }); inbox(); }) }, s === "read" ? "علّم كمقروء" : "إغلاق"))));
   }) : h("div", { class: "card empty" }, "لسه مفيش استفسارات.")), "inbox");
 }
@@ -119,7 +120,7 @@ async function mine() {
 }
 async function admin() {
   const d = await api("/api/admin/pending").catch(() => ({ listings: [] }));
-  const q = h("div", { class: "card stack" }, h("h2", {}, `إعلانات في انتظار المراجعة (${d.listings.length})`), d.listings.length ? d.listings.map((l) => { const why = h("input", { placeholder: "سبب الرفض (اختياري)" }); return h("div", { class: "card stack" }, h("a", { href: `#/l/${l.id}`, style: "font-weight:700" }, l.title), h("div", { class: "muted small" }, `${money(l)} · ${l.city} · ${l.agent} (${l.aemail})`), why, h("div", { class: "row" }, h("button", { class: "btn sm pri", onclick: () => guard(async () => { await api(`/api/admin/listing/${l.id}`, { status: "approved" }); admin(); }) }, "قبول"), h("button", { class: "btn sm danger", onclick: () => guard(async () => { await api(`/api/admin/listing/${l.id}`, { status: "rejected", reason: why.value }); admin(); }) }, "رفض"))); }) : h("p", { class: "muted" }, "مفيش إعلانات منتظرة. 🎉"));
+  const q = h("div", { class: "card stack" }, h("h2", {}, `إعلانات في انتظار المراجعة (${d.listings.length})`), d.listings.length ? d.listings.map((l) => { const why = h("input", { placeholder: "سبب الرفض (اختياري)" }); return h("div", { class: "card stack" }, h("a", { href: `#/l/${l.id}`, style: "font-weight:700" }, l.title), h("div", { class: "muted small" }, `${money(l)} · ${l.city} · ${l.agent} (${l.aemail})`), why, h("div", { class: "row" }, h("button", { class: "btn sm pri", onclick: () => guard(async () => { await api(`/api/admin/listing/${l.id}`, { status: "approved" }); admin(); }) }, "قبول"), h("button", { class: "btn sm danger", onclick: () => guard(async () => { await api(`/api/admin/listing/${l.id}`, { status: "rejected", reason: why.value }); admin(); }) }, "رفض"))); }) : h("p", { class: "muted" }, "مفيش إعلانات منتظرة."));
   shell(h("div", { class: "stack" }, adminView("Aqar", (a) => h("div", { class: "grid" }, [["إعلانات حقيقية", a.listings], ["منشورة", a.approved], ["قيد المراجعة", a.pending], ["استفسارات", a.inquiries]].map(([l, n]) => h("div", { class: "card" }, h("div", { class: "stat" }, n), h("div", { class: "muted small" }, l))))), q), "admin");
 }
 async function plans() { const d = await api("/api/plans"); shell(h("div", { class: "stack" }, h("h1", {}, "الخطط"), plansView(d.plans, S.user ? S.user.plan : ""), h("p", { class: "muted small" }, "الخطط المدفوعة مش متاحة لسه. المجانية شغالة بالكامل.")), "plans"); }
