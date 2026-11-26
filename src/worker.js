@@ -48,6 +48,9 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
     return o;
   }
   purgeUsers(ids) { const n = ids.map(() => "?").join(","); this.run(`DELETE FROM favs WHERE uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids); this.run(`DELETE FROM inq WHERE owner IN (${n}) OR from_uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids, ...ids); this.run(`DELETE FROM listings WHERE owner IN (${n})`, ...ids); }
+  exportData(u) {
+    return { listings: this.q("SELECT * FROM listings WHERE owner=? LIMIT 2000", u.id), favourites: this.q("SELECT listing,ts FROM favs WHERE uid=? LIMIT 2000", u.id), inquiries_sent: this.q("SELECT listing,name,phone,email,msg,created FROM inq WHERE from_uid=? LIMIT 1000", u.id) };
+  }
   async app(c) {
     this.seed();
     const { path, method, body, url } = c; let m;
