@@ -51,7 +51,7 @@ async function home() {
     more.replaceChildren(d.more ? h("button", { class: "btn", onclick: () => { F.page++; run(true); } }, "عرض المزيد") : null);
     if (!cities.length) { cities = d.cities; citySel.replaceChildren(sel("city", "المدينة", [["", "كل المدن"], ...cities.map((c) => [c, c])])); }
   };
-  shell(h("div", { class: "stack" }, h("section", { class: "hero2" }, h("div", { class: "sky", html: skyline() }), h("div", { html: blueprintHero() }), h("h1", {}, "لاقي بيتك الجاي في مصر"), h("p", { class: "muted" }, "شقق وفلل ومكاتب وشاليهات للبيع والإيجار. احفظ المفضلة وتواصل مع المعلن مباشرة."),
+  shell(h("div", { class: "stack" }, h("section", { class: "hero2" }, h("div", { class: "sky", html: skyline() }), h("div", { class: "d3", html: blueprintHero() }), h("h1", {}, "لاقي بيتك الجاي في مصر"), h("p", { class: "muted" }, "شقق وفلل ومكاتب وشاليهات للبيع والإيجار. احفظ المفضلة وتواصل مع المعلن مباشرة."),
     h("div", { class: "filters" }, inp("q", "بحث", "المدينة أو المنطقة أو العنوان"), citySel, sel("purpose", "الغرض", [["", "الكل"], ["sale", "للبيع"], ["rent", "للإيجار"]]), sel("type", "النوع", [["", "الكل"], ...Object.entries(TYPES)]), inp("min", "أقل سعر", "ج.م", "number"), inp("max", "أعلى سعر", "ج.م", "number"), sel("beds", "غرف النوم", [["", "أي عدد"], ["1", "1+"], ["2", "2+"], ["3", "3+"], ["4", "4+"]]), sel("sort", "الترتيب", [["new", "الأحدث"], ["price_asc", "السعر: الأقل"], ["price_desc", "السعر: الأعلى"], ["area_desc", "المساحة"]]))), grid, more), "home");
   run();
 }
