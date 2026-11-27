@@ -10,7 +10,7 @@ const SEED = [
   ["شقة للإيجار قريبة من المترو", "القاهرة الجديدة", "apartment", 2, 1, 120, 18000, "rent"],
 ];
 export class Hub extends BaseHub {
-  adminHash() { return "3954f4c578cae100a111e4a8e3f3a02ed85d1f71944dacd76fb23b0eea2779e0"; }
+  adminHash() { return this.env.ADMIN_HASH || null; }
   schemaSQL() {
     return `ALTER TABLE users ADD COLUMN kind TEXT;
 CREATE TABLE IF NOT EXISTS listings(id TEXT PRIMARY KEY, owner TEXT NOT NULL, title TEXT NOT NULL, descr TEXT NOT NULL DEFAULT '', city TEXT NOT NULL, district TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, purpose TEXT NOT NULL DEFAULT 'sale', beds INTEGER NOT NULL DEFAULT 0, baths INTEGER NOT NULL DEFAULT 0, area INTEGER NOT NULL, price INTEGER NOT NULL, features TEXT NOT NULL DEFAULT '', images TEXT NOT NULL DEFAULT '', phone TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'pending', reason TEXT NOT NULL DEFAULT '', views INTEGER NOT NULL DEFAULT 0, sample INTEGER NOT NULL DEFAULT 0, created INTEGER NOT NULL, updated INTEGER NOT NULL);
