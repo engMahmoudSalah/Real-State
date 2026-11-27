@@ -14,6 +14,8 @@ export class Hub extends BaseHub {
   schemaSQL() {
     return `ALTER TABLE users ADD COLUMN kind TEXT;
 CREATE TABLE IF NOT EXISTS listings(id TEXT PRIMARY KEY, owner TEXT NOT NULL, title TEXT NOT NULL, descr TEXT NOT NULL DEFAULT '', city TEXT NOT NULL, district TEXT NOT NULL DEFAULT '', type TEXT NOT NULL, purpose TEXT NOT NULL DEFAULT 'sale', beds INTEGER NOT NULL DEFAULT 0, baths INTEGER NOT NULL DEFAULT 0, area INTEGER NOT NULL, price INTEGER NOT NULL, features TEXT NOT NULL DEFAULT '', images TEXT NOT NULL DEFAULT '', phone TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'pending', reason TEXT NOT NULL DEFAULT '', views INTEGER NOT NULL DEFAULT 0, sample INTEGER NOT NULL DEFAULT 0, created INTEGER NOT NULL, updated INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS price_hist(listing TEXT NOT NULL, ts INTEGER NOT NULL, old INTEGER NOT NULL, new INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS ph_l ON price_hist(listing);
 CREATE INDEX IF NOT EXISTS l_status ON listings(status);
 CREATE TABLE IF NOT EXISTS saved_searches(id TEXT PRIMARY KEY, uid TEXT NOT NULL, name TEXT NOT NULL, qs TEXT NOT NULL, created INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS favs(uid TEXT NOT NULL, listing TEXT NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY(uid,listing));
@@ -48,7 +50,7 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
     o.phone = b.phone !== undefined ? clean(b.phone, 20).replace(/[^0-9+ ]/g, "") : old.phone || "";
     return o;
   }
-  purgeUsers(ids) { const n = ids.map(() => "?").join(","); this.run(`DELETE FROM favs WHERE uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids); this.run(`DELETE FROM inq WHERE owner IN (${n}) OR from_uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids, ...ids); this.run(`DELETE FROM listings WHERE owner IN (${n})`, ...ids); }
+  purgeUsers(ids) { const n = ids.map(() => "?").join(","); this.run(`DELETE FROM price_hist WHERE listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids); this.run(`DELETE FROM favs WHERE uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids); this.run(`DELETE FROM inq WHERE owner IN (${n}) OR from_uid IN (${n}) OR listing IN (SELECT id FROM listings WHERE owner IN (${n}))`, ...ids, ...ids, ...ids); this.run(`DELETE FROM listings WHERE owner IN (${n})`, ...ids); }
   usage(u) { return [["الإعلانات النشطة", this.one("SELECT COUNT(*) n FROM listings WHERE owner=? AND status IN ('pending','approved')", u.id).n, this.lim(u).listings]]; }
   exportData(u) {
     return { listings: this.q("SELECT * FROM listings WHERE owner=? LIMIT 2000", u.id), saved_searches: this.q("SELECT name,qs,created FROM saved_searches WHERE uid=?", u.id), favourites: this.q("SELECT listing,ts FROM favs WHERE uid=? LIMIT 2000", u.id), inquiries_sent: this.q("SELECT listing,name,phone,email,msg,created FROM inq WHERE from_uid=? LIMIT 1000", u.id) };
@@ -119,13 +121,19 @@ CREATE TABLE IF NOT EXISTS inq(id TEXT PRIMARY KEY, listing TEXT NOT NULL, owner
       this.run("INSERT INTO listings(id,owner,title,descr,city,district,type,purpose,beds,baths,area,price,features,images,phone,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", id, u.id, f.title, f.descr, f.city, f.district, f.type, f.purpose, f.beds, f.baths, f.area, f.price, f.features, f.images, f.phone, now(), now());
       this.audit(u.id, "listing_create", f.title); return { id };
     }
+    if ((m = path.match(/^\/api\/listings\/([A-Za-z0-9]+)\/history$/)) && method === "GET") {
+      const l = this.one("SELECT id,owner,price,created FROM listings WHERE id=?", m[1]); if (!l) bad("العقار غير موجود.", 404);
+      if (l.owner !== u.id && u.role !== "admin") bad("ده مش إعلانك.", 403);
+      return { price: l.price, created: l.created, changes: this.q("SELECT ts,old,new FROM price_hist WHERE listing=? ORDER BY ts DESC LIMIT 30", l.id) };
+    }
     if ((m = path.match(/^\/api\/listings\/([A-Za-z0-9]+)$/))) {
       const l = this.one("SELECT * FROM listings WHERE id=?", m[1]); if (!l) bad("العقار غير موجود.", 404);
       if (l.owner !== u.id && u.role !== "admin") bad("ده مش إعلانك.", 403);
-      if (method === "DELETE") { this.run("DELETE FROM listings WHERE id=?", l.id); this.run("DELETE FROM favs WHERE listing=?", l.id); this.audit(u.id, "listing_delete", l.title); return { ok: true }; }
+      if (method === "DELETE") { this.run("DELETE FROM listings WHERE id=?", l.id); this.run("DELETE FROM favs WHERE listing=?", l.id); this.run("DELETE FROM price_hist WHERE listing=?", l.id); this.audit(u.id, "listing_delete", l.title); return { ok: true }; }
       if (method === "POST") {
         if (body.status === "sold" || body.status === "approved" && l.status === "sold") { this.run("UPDATE listings SET status=?,updated=? WHERE id=?", body.status === "sold" ? "sold" : "approved", now(), l.id); return { ok: true }; }
         const f = this.fields(body, l);
+        if (Number(f.price) !== Number(l.price)) { this.run("INSERT INTO price_hist(listing,ts,old,new) VALUES(?,?,?,?)", l.id, now(), Number(l.price) || 0, Number(f.price) || 0); this.run("DELETE FROM price_hist WHERE listing=? AND ts NOT IN (SELECT ts FROM price_hist WHERE listing=? ORDER BY ts DESC LIMIT 30)", l.id, l.id); }
         this.run("UPDATE listings SET title=?,descr=?,city=?,district=?,type=?,purpose=?,beds=?,baths=?,area=?,price=?,features=?,images=?,phone=?,status='pending',reason='',updated=? WHERE id=?", f.title, f.descr, f.city, f.district, f.type, f.purpose, f.beds, f.baths, f.area, f.price, f.features, f.images, f.phone, now(), l.id);
         return { ok: true, status: "pending" };
       }

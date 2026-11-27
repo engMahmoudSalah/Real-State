@@ -99,11 +99,18 @@ function chooseKind() {
   const pick = (k) => guard(async () => { S.user = (await api("/api/me/kind", { kind: k })).user; location.hash = k === "agent" ? "#/dash" : "#/"; route(); });
 }
 const FORM = (l) => { l = l || { purpose: "sale", type: "apartment", beds: 2, baths: 1, features: [], images: [] }; return l; };
+async function historyModal(l) {
+  await guard(async () => {
+    const d = await api(`/api/listings/${l.id}/history`);
+    modal("سجل السعر", h("div", { class: "stack" }, h("p", { class: "muted small" }, "السعر الحالي: " + money({ price: d.price, purpose: l.purpose })),
+      d.changes.length ? h("ul", { style: "margin:0;padding-inline-start:18px;display:flex;flex-direction:column;gap:6px" }, d.changes.map((c) => h("li", {}, fmtDate(c.ts) + ": من " + fmt(c.old) + " إلى " + fmt(c.new) + " ج.م " + (c.new < c.old ? "(انخفض)" : "(ارتفع)")))) : h("p", {}, "لم يتغير السعر منذ نشر الإعلان.")));
+  });
+}
 async function dash() {
   const d = await api("/api/my/listings");
   shell(h("div", { class: "stack" }, h("div", { class: "row spread" }, h("h1", {}, "إعلاناتي"), h("button", { class: "btn pri", onclick: () => listingForm() }, "+ إعلان جديد")),
     d.listings.length ? d.listings.map((l) => h("div", { class: "card row spread" }, h("div", { class: "grow" }, h("a", { href: `#/l/${l.id}`, style: "font-weight:700" }, l.title), h("div", { class: "muted small" }, `${money(l)} · ${fmt(l.views)} مشاهدة`), l.reason ? h("div", { class: "err small" }, "سبب الرفض: " + l.reason) : null), h("span", { class: "badge " + STATUS[l.status][1] }, STATUS[l.status][0]),
-      h("button", { class: "btn sm", onclick: () => listingForm(l) }, "تعديل"), l.status === "approved" ? h("button", { class: "btn sm", onclick: () => guard(async () => { await api(`/api/listings/${l.id}`, { status: "sold" }); dash(); }) }, "تم البيع") : null, h("button", { class: "btn sm danger", onclick: () => confirm("حذف الإعلان؟") && guard(async () => { await api(`/api/listings/${l.id}`, null, "DELETE"); dash(); }) }, "حذف")))
+      h("button", { class: "btn sm", onclick: () => listingForm(l) }, "تعديل"), h("button", { class: "btn sm", onclick: () => historyModal(l) }, "سجل السعر"), l.status === "approved" ? h("button", { class: "btn sm", onclick: () => guard(async () => { await api(`/api/listings/${l.id}`, { status: "sold" }); dash(); }) }, "تم البيع") : null, h("button", { class: "btn sm danger", onclick: () => confirm("حذف الإعلان؟") && guard(async () => { await api(`/api/listings/${l.id}`, null, "DELETE"); dash(); }) }, "حذف")))
       : h("div", { class: "card empty" }, "لسه مفيش إعلانات. أضف أول إعلان وهيتراجع قبل النشر."), h("p", { class: "small muted" }, `الحد الأقصى لخطتك: ${d.limit} إعلانات نشطة. الإعلانات الجديدة والمعدّلة بتتراجع من الإدارة قبل ما تظهر.`)), "dash");
 }
 function listingForm(l0) {
